@@ -21,7 +21,7 @@ for line in sys.stdin:
     thisKey, thisSale = data_mapped
 
     if oldKey and oldKey != thisKey:
-        print oldKey, "\t", salesTotal
+        print(oldKey, "\t", salesTotal)
         oldKey = thisKey;
         salesTotal = 0
 
@@ -29,4 +29,4 @@ for line in sys.stdin:
     salesTotal += float(thisSale)
 
 if oldKey != None:
-    print oldKey, "\t", salesTotal
+    print(oldKey, "\t", salesTotal)
