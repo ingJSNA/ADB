@@ -24,12 +24,6 @@ conda install -c conda-forge docker-compose
 # Run local
 cd docker-hadoop
 docker-compose -f docker-compose-local.yml up -d
-
-# Upload data
-cd ../ADB/Hadoop/
-docker exec -it namenode bash
-hadoop fs -ls
-
 ```
 
 * Open the url http://localhost:58188/.
@@ -59,15 +53,11 @@ hadoop fs -tail hdfs://namenode:8020/bda/purchases.txt
 docker exec -it namenode bash
 cd /Example/src/store-totals
 
-# Go to
-ls /opt/hadoop-2.7.1/
-HADOOP_PREFIX
-hadoop jar /usr/lib
-
+# Run job
 hadoop  jar $HADOOP_PREFIX/share/hadoop/tools/lib/hadoop-streaming-$HADOOP_VERSION.jar \
-    -input myInputDirs \
-    -output myOutputDir \
-    -mapper /bin/cat \
-    -reducer /bin/wc
-
+    -files mapper.py,reducer.py \
+    -input hdfs://namenode:8020/bda \
+    -mapper mapper.py \
+    -reducer reducer.py \
+    -output hdfs://namenode:8020/output_1
 ```
