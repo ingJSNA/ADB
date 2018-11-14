@@ -7,13 +7,13 @@ conn = new Mongo();
 db = conn.getDB("bda");
 
 print()
-print("Todos los restaurantes de la base de datos")
+print("Restaurante en el borough “Manhattan”.")
 print()
 
-query = {}
+filter = {borough: "Manhattan"}
 projection = {}
 
-cursor = db.restaurants.find(query, projection);
+cursor = db.restaurants.find(filter, projection).limit(1);
 
 while ( cursor.hasNext() ) {
   printjson( cursor.next() );
