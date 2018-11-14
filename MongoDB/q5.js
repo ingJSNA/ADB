@@ -11,9 +11,12 @@ print("Restaurantes con score mayor que 90.")
 print()
 
 filter = {"grades.score": {$gt: 90}}
-projection = {}
+projection = {restaurant_id: 1, "grades.score": 1}
 
 cursor = db.restaurants.find(filter, projection);
+
+print("Documentos encontrados: " + cursor.count())
+print()
 
 while ( cursor.hasNext() ) {
   printjson( cursor.next() );

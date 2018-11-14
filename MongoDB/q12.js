@@ -7,11 +7,12 @@ conn = new Mongo();
 db = conn.getDB("bda");
 
 print()
-print("Todos los restaurantes: únicamente los campos restaurant_id, name, zipcode y SIN _id.")
+print("Restaurantes para los cuales el address.street existe. (Hint: utilizar operador $exists).")
 print()
 
-filter = {}
-projection = {_id: 0, restaurant_id: 1, name: 1, "address.zipcode":1}
+filter = {"address.street": {$exists: true}}
+
+projection = {restaurant_id: 1, "address.street": 1}
 
 cursor = db.restaurants.find(filter, projection);
 

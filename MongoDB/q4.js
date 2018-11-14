@@ -11,9 +11,12 @@ print("Restaurante en el borough “Manhattan”.")
 print()
 
 filter = {borough: "Manhattan"}
-projection = {}
+projection = {restaurant_id: 1, borough: 1}
 
 cursor = db.restaurants.find(filter, projection).limit(1);
+
+print("Documentos encontrados: " + cursor.count())
+print()
 
 while ( cursor.hasNext() ) {
   printjson( cursor.next() );

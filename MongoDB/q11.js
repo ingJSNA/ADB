@@ -7,13 +7,14 @@ conn = new Mongo();
 db = conn.getDB("bda");
 
 print()
-print("Todos los restaurantes: únicamente los campos restaurant_id, name, zipcode y SIN _id.")
+print("Restaurantes ordenados en ascendentemente por el name.")
 print()
 
 filter = {}
-projection = {_id: 0, restaurant_id: 1, name: 1, "address.zipcode":1}
 
-cursor = db.restaurants.find(filter, projection);
+projection = {restaurant_id: 1, name: 1}
+
+cursor = db.restaurants.find(filter, projection).sort({name: 1});
 
 print("Documentos encontrados: " + cursor.count())
 print()

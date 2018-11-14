@@ -7,11 +7,13 @@ conn = new Mongo();
 db = conn.getDB("bda");
 
 print()
-print("Todos los restaurantes: únicamente los campos restaurant_id, name, zipcode y SIN _id.")
+print("Restaurantes en los cuales el nombre comienza por la palabra “Wil”. (Hint: usar expresión regular sobre el campo name).")
 print()
 
-filter = {}
-projection = {_id: 0, restaurant_id: 1, name: 1, "address.zipcode":1}
+// En cuisine se puede encontran la palabra con un espacio al final
+filter = { name: {$regex: /^Wil.*/}}
+
+projection = {restaurant_id: 1, name: 1}
 
 cursor = db.restaurants.find(filter, projection);
 

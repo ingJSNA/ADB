@@ -15,7 +15,7 @@ mongoimport --host $HOST:$PORT --drop -d $DATABASE -c $COLLECTION data.json
 
 mkdir -p results
 
-for i in {1..7}
+for i in {1..12}
 do
   echo "Running query ${i} ..."
   mongo $HOST:$PORT/$DATABASE "q${i}.js" > "./results/r${i}.json"

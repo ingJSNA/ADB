@@ -15,6 +15,9 @@ projection = {}
 
 cursor = db.restaurants.find(filter, projection);
 
+print("Documentos encontrados: " + cursor.count())
+print()
+
 while ( cursor.hasNext() ) {
   printjson( cursor.next() );
 }
