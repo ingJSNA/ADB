@@ -13,7 +13,8 @@ var emit = function(key, value) {
 
 
 var mapper = function() {
-  emit(this.address.zipcode, 1);
+  var score = {sum: this.grades[0].score, quantity: 1};
+  emit(this.address.zipcode, score);
 };
 
 var reducer = function (key, values) {
@@ -21,7 +22,7 @@ var reducer = function (key, values) {
 };
 
 filter = {}
-projection = {restaurant_id: 1, 'address.zipcode': 1}
+projection = {restaurant_id: 1, 'address.zipcode': 1, 'grades': 1}
 
 cursor = db.restaurants.find(filter, projection);
 
@@ -41,3 +42,14 @@ var valuesIdempotent = [
                          reducer(myKey, [ 1, 1 ] )
                        ];
 printjson(reducer('myKey', valuesIdempotent));
+
+var reducer2 = function (key, values) {
+  reducedVal = { sum: 0, quantity: 0 };
+
+  for(var i=0; i < values.length; i++){
+    var value = values[i]
+    reducedVal.sum += value.sum;
+    reducedVal.quantity += value.quantity;
+  }
+  return reducedVal;
+};
