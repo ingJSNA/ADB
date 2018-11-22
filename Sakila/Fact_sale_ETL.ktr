@@ -416,7 +416,7 @@
     <feedback_size>50000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
-    <capture_step_performance>N</capture_step_performance>
+    <capture_step_performance>Y</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <step_performance_capturing_size_limit>100</step_performance_capturing_size_limit>
     <dependencies>
@@ -440,11 +440,11 @@
     <name>sakila</name>
     <server>localhost</server>
     <type>MYSQL</type>
-    <access>Native</access>
+    <access>JNDI</access>
     <database>sakila</database>
     <port>3306</port>
-    <username>root</username>
-    <password>Encrypted 2be98afc85f94c7a9ae0ba279d0cafe95</password>
+    <username/>
+    <password>Encrypted </password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -495,11 +495,11 @@
     <name>sakila_warehouse</name>
     <server>localhost</server>
     <type>MYSQL</type>
-    <access>Native</access>
+    <access>JNDI</access>
     <database>sakila_warehouse</database>
     <port>3306</port>
-    <username>root</username>
-    <password>Encrypted 2be98afc85f94c7a9ae0ba279d0cafe95</password>
+    <username/>
+    <password>Encrypted </password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -549,16 +549,31 @@
   <order>
     <hop>
       <from>DB_sakila_sales</from>
-      <to>Select values 2 2 2 2</to>
+      <to>Sale_amount precision</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select values 2 2 2 2</from>
-      <to>If field value is null 2 2</to>
+      <from>store location lookup</from>
+      <to>customer location lookup</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>If field value is null 2 2</from>
+      <from>Sale_amount precision</from>
+      <to>If field value is null</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>If field value is null</from>
+      <to>store location lookup</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>customer location lookup</from>
+      <to>Remove Store and Customer location details</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Remove Store and Customer location details</from>
       <to>Fact_sales</to>
       <enabled>Y</enabled>
     </hop>
@@ -575,17 +590,39 @@
       <schema_name/>
     </partitioning>
     <connection>sakila</connection>
-    <sql>select row_number() over w, sale.*
+    <sql>select row_number() over w as sale_id, sale.*
 from(
-select (select dat.date_id from sakila_warehouse.date dat where dat.year = extract(year from rent.rental_date) and dat.month = extract(month from rent.rental_date) and dat.day = extract(day from rent.rental_date)) date_id, 
-rent.customer_id, inv.film_id, 
-(select loc.location_id from sakila.country coun, sakila.city cit, sakila.address ad, sakila_warehouse.location loc  where coun.country_id = cit.country_id and cit.city_id = ad.city_id 
-	and loc.district = ad.district and loc.city_name = cit.city and loc.country_name =  coun.country and loc.postal_code = ad.postal_code and ad.address_id = cust.address_id) customer_location, 
-(select loc.location_id from sakila.country coun, sakila.city cit, sakila.address ad, sakila_warehouse.location loc  where coun.country_id = cit.country_id and cit.city_id = ad.city_id 
-	and loc.district = ad.district and loc.city_name = cit.city and loc.country_name =  coun.country and loc.postal_code = ad.postal_code and ad.address_id = store.address_id) store_location,  
-cust.store_id , sum(pay.amount) sale_amount
-from sakila.rental rent, sakila.inventory inv, sakila.customer cust, sakila.store store, sakila.payment pay
-where rent.inventory_id = inv.inventory_id and rent.customer_id = cust.customer_id and cust.store_id = store.store_id and pay.rental_id = rent.rental_id
+select (select dat.date_id 
+	from sakila_warehouse.date dat 
+		where dat.year = extract(year from rent.rental_date) 
+        and dat.month = extract(month from rent.rental_date) 
+        and dat.day = extract(day from rent.rental_date)) date_id, 
+rent.customer_id, inv.film_id,  
+cust.store_id , 
+sum(pay.amount) sale_amount, 
+store_country.country as store_country, 
+store_city.city as store_city,
+store_address.district as store_district,
+store_address.postal_code as store_postal_code,
+customer_country.country as customer_country, 
+customer_city.city as customer_city,
+customer_address.district as customer_district,
+customer_address.postal_code as customer_postal_code
+from sakila.rental rent, sakila.inventory inv, sakila.customer cust, sakila.store store, sakila.payment pay,
+	sakila.country store_country, sakila.city store_city, sakila.address store_address,
+    sakila.country customer_country, sakila.city customer_city, sakila.address customer_address
+	where rent.inventory_id = inv.inventory_id 
+		and rent.customer_id = cust.customer_id 
+        and cust.store_id = store.store_id 
+        and pay.rental_id = rent.rental_id
+        # Store location
+        and store.address_id = store_address.address_id
+        and store_address.city_id = store_city.city_id
+        and store_city.country_id = store_country.country_id
+        # Customer location
+        and cust.address_id = customer_address.address_id
+        and customer_address.city_id = customer_city.city_id
+        and customer_city.country_id = customer_country.country_id
 group by rent.rental_date, cust.address_id, store.address_id, cust.store_id, rent.customer_id, inv.film_id
 ) sale
 window w as (order by date_id);</sql>
@@ -602,8 +639,8 @@ window w as (order by date_id);</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>288</xloc>
-      <yloc>448</yloc>
+      <xloc>64</xloc>
+      <yloc>80</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -677,13 +714,13 @@ window w as (order by date_id);</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>928</xloc>
-      <yloc>448</yloc>
+      <xloc>880</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Select values 2 2 2 2</name>
+    <name>Sale_amount precision</name>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
@@ -695,8 +732,8 @@ window w as (order by date_id);</sql>
     </partitioning>
     <fields>
       <field>
-        <name>row_number() over w</name>
-        <rename>sale_id</rename>
+        <name>sale_id</name>
+        <rename/>
       </field>
       <field>
         <name>date_id</name>
@@ -711,14 +748,6 @@ window w as (order by date_id);</sql>
         <rename/>
       </field>
       <field>
-        <name>customer_location</name>
-        <rename/>
-      </field>
-      <field>
-        <name>store_location</name>
-        <rename/>
-      </field>
-      <field>
         <name>store_id</name>
         <rename/>
       </field>
@@ -727,6 +756,38 @@ window w as (order by date_id);</sql>
         <rename/>
         <length>5</length>
         <precision>2</precision>
+      </field>
+      <field>
+        <name>store_country</name>
+        <rename/>
+      </field>
+      <field>
+        <name>store_city</name>
+        <rename/>
+      </field>
+      <field>
+        <name>store_district</name>
+        <rename/>
+      </field>
+      <field>
+        <name>store_postal_code</name>
+        <rename/>
+      </field>
+      <field>
+        <name>customer_country</name>
+        <rename/>
+      </field>
+      <field>
+        <name>customer_city</name>
+        <rename/>
+      </field>
+      <field>
+        <name>customer_district</name>
+        <rename/>
+      </field>
+      <field>
+        <name>customer_postal_code</name>
+        <rename/>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
@@ -738,13 +799,143 @@ window w as (order by date_id);</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>448</yloc>
+      <xloc>208</xloc>
+      <yloc>80</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>If field value is null 2 2</name>
+    <name>store location lookup</name>
+    <type>DBLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>sakila_warehouse</connection>
+    <cache>Y</cache>
+    <cache_load_all>N</cache_load_all>
+    <cache_size>0</cache_size>
+    <lookup>
+      <schema/>
+      <table>location</table>
+      <orderby/>
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+      <key>
+        <name>store_district</name>
+        <field>district</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>store_city</name>
+        <field>city_name</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>store_country</name>
+        <field>country_name</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>store_postal_code</name>
+        <field>postal_code</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>location_id</name>
+        <rename>store_location</rename>
+        <default/>
+        <type>Integer</type>
+      </value>
+    </lookup>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>432</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>customer location lookup</name>
+    <type>DBLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>sakila_warehouse</connection>
+    <cache>Y</cache>
+    <cache_load_all>N</cache_load_all>
+    <cache_size>0</cache_size>
+    <lookup>
+      <schema/>
+      <table>location</table>
+      <orderby/>
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+      <key>
+        <name>customer_district</name>
+        <field>district</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>customer_city</name>
+        <field>city_name</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>customer_country</name>
+        <field>country_name</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>customer_postal_code</name>
+        <field>postal_code</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>location_id</name>
+        <rename>customer_location</rename>
+        <default/>
+        <type>Integer</type>
+      </value>
+    </lookup>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>544</xloc>
+      <yloc>64</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>If field value is null</name>
     <type>IfNull</type>
     <description/>
     <distribute>N</distribute>
@@ -763,14 +954,50 @@ window w as (order by date_id);</sql>
       </valuetypes>
     <fields>
       <field>
-        <name>store_location</name>
-        <value>1</value>
+        <name>store_district</name>
+        <value>N/A</value>
         <mask/>
         <set_empty_string>N</set_empty_string>
       </field>
       <field>
-        <name>customer_location</name>
-        <value>1</value>
+        <name>store_city</name>
+        <value>N/A</value>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>store_country</name>
+        <value>N/A</value>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>store_postal_code</name>
+        <value>N/A</value>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>customer_district</name>
+        <value>N/A</value>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>customer_city</name>
+        <value>N/A</value>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>customer_country</name>
+        <value>N/A</value>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>customer_postal_code</name>
+        <value>N/A</value>
         <mask/>
         <set_empty_string>N</set_empty_string>
       </field>
@@ -783,8 +1010,59 @@ window w as (order by date_id);</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>752</xloc>
-      <yloc>448</yloc>
+      <xloc>320</xloc>
+      <yloc>48</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Remove Store and Customer location details</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <remove>
+        <name>store_country</name>
+      </remove>
+      <remove>
+        <name>store_city</name>
+      </remove>
+      <remove>
+        <name>store_district</name>
+      </remove>
+      <remove>
+        <name>store_postal_code</name>
+      </remove>
+      <remove>
+        <name>customer_country</name>
+      </remove>
+      <remove>
+        <name>customer_city</name>
+      </remove>
+      <remove>
+        <name>customer_district</name>
+      </remove>
+      <remove>
+        <name>customer_postal_code</name>
+      </remove>
+    </fields>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>704</xloc>
+      <yloc>128</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
