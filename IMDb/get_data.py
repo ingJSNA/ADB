@@ -17,7 +17,7 @@ from tqdm.auto import tqdm
 # In[15]:
 
 
-data_folder = './data'
+data_folder = './imdb'
 
 if not os.path.exists(data_folder):
     os.mkdir(data_folder)
@@ -61,8 +61,6 @@ def get_imdb_file_dataframe(url, low_memory=True, dtype=None):
 
 
 # In[26]:
-
-
 def get_name_basics():
     return get_imdb_file_dataframe('https://datasets.imdbws.com/name.basics.tsv.gz')
 
