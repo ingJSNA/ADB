@@ -38,8 +38,8 @@ DROP TABLE IF EXISTS `imdb`.`title_basics` ;
 CREATE TABLE IF NOT EXISTS `imdb`.`title_basics` (
   `tconst` INT NOT NULL,
   `titleType` VARCHAR(45) NULL,
-  `primaryTitle` VARCHAR(45) NULL,
-  `originalTitle` VARCHAR(45) NULL,
+  `primaryTitle` VARCHAR(410) NULL,
+  `originalTitle` VARCHAR(410) NULL,
   `isAdult` VARCHAR(45) NULL,
   `startYear` VARCHAR(45) NULL,
   `endYear` VARCHAR(45) NULL,

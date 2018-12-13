@@ -53,11 +53,13 @@ def fetch_or_resume(url, filename):
         if total_size != 0 and wrote != total_size:
             print("ERROR, something went wrong")
 
-def get_imdb_file_dataframe(url, low_memory=True, dtype=None):
+def get_imdb_file_dataframe(url, download=False, low_memory=True):
     base = os.path.basename(url)
     filename = os.path.join(data_folder, base)
-    fetch_or_resume(url, filename)
-    return pd.read_csv(filename, sep='\t', low_memory=low_memory, dtype=dtype, na_values={'\\N'})
+    if download:
+        fetch_or_resume(url, filename)
+
+    return pd.read_csv(filename, sep='\t', low_memory=low_memory, na_values={'\\N'})
 
 
 # In[26]:
