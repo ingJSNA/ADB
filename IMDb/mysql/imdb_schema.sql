@@ -57,7 +57,7 @@ DROP TABLE IF EXISTS `imdb`.`title_akas` ;
 CREATE TABLE IF NOT EXISTS `imdb`.`title_akas` (
   `titleid` INT NOT NULL,
   `ordering` VARCHAR(45) NULL,
-  `title` VARCHAR(45) NULL,
+  `title` VARCHAR(840) NULL,
   `region` VARCHAR(45) NULL,
   `language` VARCHAR(45) NULL,
   `types` VARCHAR(45) NULL,

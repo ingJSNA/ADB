@@ -5,7 +5,7 @@
 
 # In[1]:
 
-
+import csv
 import math
 import pandas as pd
 import os
@@ -59,7 +59,8 @@ def get_imdb_file_dataframe(url, download=False, low_memory=True):
     if download:
         fetch_or_resume(url, filename)
 
-    return pd.read_csv(filename, sep='\t', low_memory=low_memory, na_values={'\\N'})
+    return pd.read_csv(filename, sep='\t', low_memory=low_memory,
+                        na_values={'\\N'}, quoting=csv.QUOTE_NONE)
 
 
 # In[26]:
