@@ -6,7 +6,6 @@
 # In[1]:
 
 import csv
-import math
 import pandas as pd
 import os
 import requests
@@ -53,7 +52,7 @@ def fetch_or_resume(url, filename):
         if total_size != 0 and wrote != total_size:
             print("ERROR, something went wrong")
 
-def get_imdb_file_dataframe(url, download=False, low_memory=True):
+def get_imdb_dataframe(url, download=False, low_memory=True):
     base = os.path.basename(url)
     filename = os.path.join(data_folder, base)
     if download:
@@ -63,24 +62,11 @@ def get_imdb_file_dataframe(url, download=False, low_memory=True):
                         na_values={'\\N'}, quoting=csv.QUOTE_NONE)
 
 
-# In[26]:
-def get_name_basics():
-    return get_imdb_file_dataframe('https://datasets.imdbws.com/name.basics.tsv.gz')
+def title_episode_df():
+    return get_imdb_dataframe('https://datasets.imdbws.com/title.episode.tsv.gz')
 
-def get_title_akas():
-    return get_imdb_file_dataframe('https://datasets.imdbws.com/title.akas.tsv.gz')
+def title_principals_df():
+    return get_imdb_dataframe('https://datasets.imdbws.com/title.principals.tsv.gz')
 
-def get_title_basics():
-    return get_imdb_file_dataframe('https://datasets.imdbws.com/title.basics.tsv.gz')
-
-def get_title_crew():
-    return get_imdb_file_dataframe('https://datasets.imdbws.com/title.crew.tsv.gz')
-
-def get_title_episode():
-    return get_imdb_file_dataframe('https://datasets.imdbws.com/title.episode.tsv.gz')
-
-def get_title_principals():
-    return get_imdb_file_dataframe('https://datasets.imdbws.com/title.principals.tsv.gz')
-
-def get_title_ratings():
-    return get_imdb_file_dataframe('https://datasets.imdbws.com/title.ratings.tsv.gz')
+def title_ratings_df():
+    return get_imdb_dataframe('https://datasets.imdbws.com/title.ratings.tsv.gz')
