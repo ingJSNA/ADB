@@ -56,13 +56,13 @@ DROP TABLE IF EXISTS `imdb`.`title_akas` ;
 
 CREATE TABLE IF NOT EXISTS `imdb`.`title_akas` (
   `titleid` INT NOT NULL,
-  `ordering` VARCHAR(45) NULL,
-  `title` VARCHAR(840) NULL,
+  `ordering` INT NULL,
+  `title` VARCHAR(832) NULL,
   `region` VARCHAR(45) NULL,
   `language` VARCHAR(45) NULL,
   `types` VARCHAR(45) NULL,
-  `attributes` VARCHAR(45) NULL,
-  `isOriginalTitle` VARCHAR(45) NULL,
+  `attributes` VARCHAR(62) NULL,
+  `isOriginalTitle` INT NULL,
   INDEX `fk_title_akas_title_basics_idx` (`titleid` ASC),
   CONSTRAINT `fk_title_akas_title_basics`
     FOREIGN KEY (`titleid`)
