@@ -61,6 +61,9 @@ def get_imdb_dataframe(url, download=False, low_memory=True):
     return pd.read_csv(filename, sep='\t', low_memory=low_memory,
                         na_values={'\\N'}, quoting=csv.QUOTE_NONE)
 
+def name_basics_df():
+    return get_imdb_dataframe('https://datasets.imdbws.com/name.basics.tsv.gz')
+
 def title_episode_df():
     return get_imdb_dataframe('https://datasets.imdbws.com/title.episode.tsv.gz')
 
@@ -75,3 +78,6 @@ def title_akas_df():
 
 def title_basics_df():
     return get_imdb_dataframe('https://datasets.imdbws.com/title.basics.tsv.gz')
+
+def title_crew_df():
+    return get_imdb_dataframe('https://datasets.imdbws.com/title.crew.tsv.gz')

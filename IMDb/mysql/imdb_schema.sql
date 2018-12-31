@@ -79,8 +79,8 @@ DROP TABLE IF EXISTS `imdb`.`title_crew` ;
 
 CREATE TABLE IF NOT EXISTS `imdb`.`title_crew` (
   `tconst` INT NOT NULL,
-  `director` INT NOT NULL,
-  `writer` INT NOT NULL,
+  `director` INT NULL,
+  `writer` INT NULL,
   INDEX `fk_title_crew_title_basics1_idx` (`tconst` ASC),
   INDEX `fk_title_crew_name_basics1_idx` (`director` ASC),
   INDEX `fk_title_crew_name_basics2_idx` (`writer` ASC),
