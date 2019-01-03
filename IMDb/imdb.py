@@ -52,13 +52,13 @@ def fetch_or_resume(url, filename):
         if total_size != 0 and wrote != total_size:
             print("ERROR, something went wrong")
 
-def get_imdb_dataframe(url, download=False, low_memory=True):
+def get_imdb_dataframe(url, download=False, dtypes=None):
     base = os.path.basename(url)
     filename = os.path.join(data_folder, base)
     if download:
         fetch_or_resume(url, filename)
 
-    return pd.read_csv(filename, sep='\t', low_memory=low_memory,
+    return pd.read_csv(filename, sep='\t',  dtype=dtypes,
                         na_values={'\\N'}, quoting=csv.QUOTE_NONE)
 
 def name_basics_df():
@@ -68,7 +68,13 @@ def title_episode_df():
     return get_imdb_dataframe('https://datasets.imdbws.com/title.episode.tsv.gz')
 
 def title_principals_df():
-    return get_imdb_dataframe('https://datasets.imdbws.com/title.principals.tsv.gz')
+    url = 'https://datasets.imdbws.com/title.principals.tsv.gz'
+    dtypes = {
+        'ordering': 'uint8',
+        'category': 'category',
+        'job': 'category',
+    }
+    return get_imdb_dataframe(url=url, dtypes=dtypes)
 
 def title_ratings_df():
     return get_imdb_dataframe('https://datasets.imdbws.com/title.ratings.tsv.gz')
