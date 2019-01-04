@@ -73,17 +73,15 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `imdb`.`title_crew`
+-- Table `imdb`.`title_crew_director`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `imdb`.`title_crew` ;
+DROP TABLE IF EXISTS `imdb`.`title_crew_director` ;
 
-CREATE TABLE IF NOT EXISTS `imdb`.`title_crew` (
+CREATE TABLE IF NOT EXISTS `imdb`.`title_crew_director` (
   `tconst` INT NOT NULL,
-  `director` INT NULL,
-  `writer` INT NULL,
+  `director` INT NOT NULL,
   INDEX `fk_title_crew_title_basics1_idx` (`tconst` ASC),
   INDEX `fk_title_crew_name_basics1_idx` (`director` ASC),
-  INDEX `fk_title_crew_name_basics2_idx` (`writer` ASC),
   CONSTRAINT `fk_title_crew_title_basics1`
     FOREIGN KEY (`tconst`)
     REFERENCES `imdb`.`title_basics` (`tconst`)
@@ -91,11 +89,6 @@ CREATE TABLE IF NOT EXISTS `imdb`.`title_crew` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_title_crew_name_basics1`
     FOREIGN KEY (`director`)
-    REFERENCES `imdb`.`name_basics` (`nconst`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_title_crew_name_basics2`
-    FOREIGN KEY (`writer`)
     REFERENCES `imdb`.`name_basics` (`nconst`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
@@ -165,6 +158,29 @@ CREATE TABLE IF NOT EXISTS `imdb`.`title_ratings` (
   CONSTRAINT `fk_title_ratings_title_basics1`
     FOREIGN KEY (`tconst`)
     REFERENCES `imdb`.`title_basics` (`tconst`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `imdb`.`title_crew_writer`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `imdb`.`title_crew_writer` ;
+
+CREATE TABLE IF NOT EXISTS `imdb`.`title_crew_writer` (
+  `tconst` INT NOT NULL,
+  `writer` INT NOT NULL,
+  INDEX `fk_title_crew_title_basics1_idx` (`tconst` ASC),
+  INDEX `fk_title_crew_name_basics2_idx` (`writer` ASC),
+  CONSTRAINT `fk_title_crew_title_basics10`
+    FOREIGN KEY (`tconst`)
+    REFERENCES `imdb`.`title_basics` (`tconst`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_title_crew_name_basics20`
+    FOREIGN KEY (`writer`)
+    REFERENCES `imdb`.`name_basics` (`nconst`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

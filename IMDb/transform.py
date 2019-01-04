@@ -5,20 +5,20 @@ Set of common transformations
 import numpy as np
 import pandas as pd
 
-def nconst_to_float(df):
+def nconst_to_float(series):
     '''
     Transform the nconst column to float.
     The type float64 support NaN values in Pandas.
     '''
-    return df.str.replace('nm', '').astype(float)
+    return pd.to_numeric(series.str.replace('nm', ''), downcast='unsigned')
 
 
-def tconst_to_float(df):
+def tconst_to_float(series):
     '''
     Transform the tconst column to float.
     The type float64 support NaN values in Pandas.
     '''
-    return df.str.replace('tt', '').astype(float)
+    return pd.to_numeric(series.str.replace('tt', ''), downcast='unsigned')
 
 
 def expand_rows_using_repeat(df, target_column, separator):
