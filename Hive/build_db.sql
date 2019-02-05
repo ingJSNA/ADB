@@ -22,12 +22,16 @@ CREATE TABLE u_data_new (
 ROW FORMAT DELIMITED
   FIELDS TERMINATED BY '\t';
 
+/*
 INSERT OVERWRITE TABLE u_data_new
   SELECT
   TRANSFORM (userid, movieid, rating, unixtime)
   USING 'python datetime_mapper.py'
   AS (userid, movieid, rating, weekday)
   FROM u_data;
+*/
+
+LOAD DATA LOCAL INPATH '/workspace/data/u.data_new' OVERWRITE INTO TABLE u_data_new;
 
 SELECT weekday, COUNT(1)
   FROM u_data_new

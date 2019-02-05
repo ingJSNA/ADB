@@ -7,7 +7,8 @@
 # Copy datetime mapper
 
 cp /workspace/datetime_mapper.py $HIVE_HOME
-hadoop fs -put /workspace/datetime_mapper.py /user/hive
+
+cat /workspacedata/u.data  | python /workspace/datetime_mapper.py  > /workspace/data/u.data_new
 
 # Build data base
 
