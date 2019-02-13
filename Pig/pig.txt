@@ -1,0 +1,8 @@
+
+GroupByOccupation = GROUP users BY occupation;
+
+CountByOccupation = FOREACH GroupByOccupation GENERATE CONCAT((chararray)$0,CONCAT(':',(chararray)COUNT($1)));
+
+STORE CountByOccupation INTO 'pig_output_count_occupations' USING PigStorage('\t');
+
+hdfs dfs -cat pig_output_count_occupations/part-r-00000
