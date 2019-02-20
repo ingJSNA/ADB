@@ -1,0 +1,13 @@
+name: bda
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - findspark
+  - jupyter
+  - pandas
+  - python=3.6
+  - pymysql
+  - sqlalchemy=1.2
+
+
